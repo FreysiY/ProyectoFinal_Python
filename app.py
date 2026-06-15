@@ -42,14 +42,86 @@ menu = st.sidebar.selectbox("Ir a:", ["Home", "Carga", "EDA"])
 # HOME
 # -------------------------
 if menu == "Home":
-    st.title("📊 Bank Marketing App")
+    st.title("📊 Proyecto: Análisis de Campañas de Marketing Bancario")
 
-    st.write("Análisis exploratorio del dataset de marketing bancario.")
+    st.markdown("---")
+
+    # -------------------------
+    # DESCRIPCIÓN DEL PROYECTO
+    # -------------------------
+    st.subheader("🎯 Objetivo del Proyecto")
 
     st.write("""
-    **Autor:** Freysi Zurita  
-    **Curso:** Python for Analytics  
+    El objetivo de esta aplicación es realizar un Análisis Exploratorio de Datos (EDA) sobre un dataset de marketing bancario, con el fin de identificar patrones, comportamientos y factores que influyen en la aceptación de campañas.
     """)
+
+    # -------------------------
+    # DATOS DEL AUTOR
+    # -------------------------
+    st.subheader("👩‍💻 Datos del Autor")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.write("**Nombre:** Freysi Zurita")
+        st.write("**Curso:** Python for Analytics")
+
+    with col2:
+        st.write("**Año:** 2026")
+        st.write("**Proyecto:** Caso de Estudio N°1")
+
+    # -------------------------
+    # EXPLICACIÓN DEL DATASET
+    # -------------------------
+    st.subheader("📁 Descripción del Dataset")
+
+    st.write("""
+    El dataset BankMarketing contiene información de campañas realizadas por una institución financiera, donde se busca analizar qué factores influyen en que un cliente acepte o no una oferta.
+
+    Incluye variables demográficas, económicas y de comportamiento, como:
+    - Edad del cliente
+    - Tipo de trabajo
+    - Nivel educativo
+    - Tipo de contacto
+    - Duración de la llamada
+    - Resultado de la campaña (variable objetivo: **y**)
+    """)
+
+    # -------------------------
+    # CONTEXTO DEL PROBLEMA
+    # -------------------------
+    st.subheader("📉 Contexto del Negocio")
+
+    st.write("""
+    La efectividad de las campañas de marketing ha disminuido en los últimos meses, pasando de un 12% a un 8%, lo cual afecta directamente los resultados comerciales. A través de este análisis se busca identificar oportunidades de mejora
+    para optimizar las estrategias de contacto con los clientes.
+    """)
+
+    # -------------------------
+    # TECNOLOGÍAS
+    # -------------------------
+    st.subheader("🛠 Tecnologías Utilizadas")
+
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        st.write("🐍 Python")
+        st.write("📊 Pandas")
+
+    with col2:
+        st.write("📈 Matplotlib")
+        st.write("🌐 Streamlit")
+
+    with col3:
+        st.write("📉 Análisis estadístico")
+        st.write("🧠 EDA")
+
+    st.markdown("---")
+
+    # -------------------------
+    # NOTA FINAL
+    # -------------------------
+    st.info("Aplicación desarrollada como proyecto académico orientado a análisis de datos.")
 
 # -------------------------
 # CARGA
