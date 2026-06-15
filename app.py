@@ -123,11 +123,17 @@ elif opcion == "EDA":
 
             num_cols, _ = analyzer.tipos_variables()
 
-            col = st.selectbox("Selecciona variable", num_cols)
-
-            fig, ax = plt.subplots()
-            sns.histplot(df[col], kde=True, ax=ax)
-            st.pyplot(fig)
+            if len(num_cols) > 0:
+                col = st.selectbox("Selecciona variable", list(num_cols))
+            
+                if col in df.columns:
+                    fig, ax = plt.subplots()
+                    sns.histplot(df[col], kde=True, ax=ax)
+                    st.pyplot(fig)
+                else:
+                    st.error("La columna seleccionada no existe en el dataset")
+            else:
+                st.warning("No hay variables numéricas disponibles")
 
         # -----------------------
         # TAB 3
@@ -135,18 +141,24 @@ elif opcion == "EDA":
         with tab3:
             st.subheader("Variables categóricas")
 
-            _, cat_cols = analyzer.tipos_variables()
+           _, cat_cols = analyzer.tipos_variables()
 
-            col = st.selectbox("Selecciona variable categórica", cat_cols)
-
-            conteo = df[col].value_counts()
-
-            st.write(conteo)
-
-            fig, ax = plt.subplots()
-            conteo.plot(kind='bar', ax=ax)
-            st.pyplot(fig)
-
+            if len(cat_cols) > 0:
+                col = st.selectbox("Selecciona variable categórica", list(cat_cols))
+            
+                if col in df.columns:
+                    conteo = df[col].value_counts()
+            
+                    st.write(conteo)
+            
+                    fig, ax = plt.subplots()
+                    conteo.plot(kind='bar', ax=ax)
+                    st.pyplot(fig)
+                else:
+                    st.error("Columna inválida")
+            else:
+                st.warning("No hay variables categóricas")
+    
         # -----------------------
         # TAB 4
         # -----------------------
@@ -155,19 +167,19 @@ elif opcion == "EDA":
 
             num_cols, cat_cols = analyzer.tipos_variables()
 
-            col_num = st.selectbox("Variable numérica", num_cols)
-            col_cat = st.selectbox("Variable categórica", cat_cols)
-
-            fig, ax = plt.subplots()
-            sns.boxplot(x=df[col_cat], y=df[col_num], ax=ax)
-            st.pyplot(fig)
-
-            st.subheader("Filtro dinámico")
-
-            valor = st.selectbox("Filtrar por y", df['y'].unique())
-            df_filtrado = df[df['y'] == valor]
-
-            st.write(df_filtrado.head())
+            if len(num_cols) > 0 and len(cat_cols) > 0:
+            
+                col_num = st.selectbox("Variable numérica", list(num_cols))
+                col_cat = st.selectbox("Variable categórica", list(cat_cols))
+            
+                if col_num in df.columns and col_cat in df.columns:
+                    fig, ax = plt.subplots()
+                    sns.boxplot(x=df[col_cat], y=df[col_num], ax=ax)
+                    st.pyplot(fig)
+                else:
+                    st.error("Columnas inválidas")
+            else:
+                st.warning("Faltan variables para análisis bivariado")
 
             # Hallazgos simples
             st.subheader("Hallazgos")
