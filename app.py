@@ -141,7 +141,7 @@ elif opcion == "EDA":
         with tab3:
             st.subheader("Variables categóricas")
 
-           _, cat_cols = analyzer.tipos_variables()
+            _, cat_cols = analyzer.tipos_variables()
 
             if len(cat_cols) > 0:
                 col = st.selectbox("Selecciona variable categórica", list(cat_cols))
