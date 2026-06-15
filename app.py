@@ -1,192 +1,211 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
-import seaborn as sns
 
-# -------------------------------
-# CONFIGURACIÓN
-# -------------------------------
-st.set_page_config(page_title="Bank Marketing App", layout="wide")
+# -------------------------
+# CONFIG
+# -------------------------
+st.set_page_config(page_title="Bank Marketing", layout="wide")
 
-# -------------------------------
-# CLASE (POO)
-# -------------------------------
-class DataAnalyzer:
+# -------------------------
+# CACHE (CLAVE PARA MEMORIA)
+# -------------------------
+@st.cache_data
+def cargar_datos(file):
+    df = pd.read_csv(file)
+    df.columns = df.columns.str.strip()
+    return df
 
+# -------------------------
+# CLASE (POO SIMPLE)
+# -------------------------
+class Analizador:
     def __init__(self, df):
         self.df = df
 
-    def resumen(self):
-        return self.df.describe()
+    def numericas(self):
+        return self.df.select_dtypes(include=['int64', 'float64']).columns
 
-    def tipos_variables(self):
-        num = self.df.select_dtypes(include=['int64', 'float64']).columns
-        cat = self.df.select_dtypes(include=['object']).columns
-        return num, cat
+    def categoricas(self):
+        return self.df.select_dtypes(include=['object']).columns
 
-    def valores_nulos(self):
+    def nulos(self):
         return self.df.isnull().sum()
 
-# -------------------------------
+# -------------------------
 # SIDEBAR
-# -------------------------------
+# -------------------------
 st.sidebar.title("Menú")
-opcion = st.sidebar.selectbox(
-    "Selecciona un módulo",
-    ["Home", "Carga de datos", "EDA"]
-)
+menu = st.sidebar.selectbox("Ir a:", ["Home", "Carga", "EDA"])
 
-# -------------------------------
-# MÓDULO 1: HOME
-# -------------------------------
-if opcion == "Home":
-    st.title("📊 Proyecto Bank Marketing")
+# -------------------------
+# HOME
+# -------------------------
+if menu == "Home":
+    st.title("📊 Bank Marketing App")
+
+    st.write("Análisis exploratorio del dataset de marketing bancario.")
 
     st.write("""
-    **Objetivo:** Analizar el dataset BankMarketing para identificar patrones
-    en campañas de marketing.
+    **Autor:** Freysi Zurita  
+    **Curso:** Python for Analytics  
     """)
 
-    st.subheader("👩‍💻 Autor")
-    st.write("""
-    Nombre: Freysi Zurita  
-    Curso: Python for Analytics  
-    Año: 2026
-    """)
+# -------------------------
+# CARGA
+# -------------------------
+elif menu == "Carga":
+    st.title("📂 Carga de datos")
 
-    st.subheader("📁 Dataset")
-    st.write("Datos de campañas de marketing bancario.")
+    file = st.file_uploader("Sube el CSV", type=["csv"])
 
-    st.subheader("🛠 Tecnologías")
-    st.write("Python, Pandas, Streamlit, Matplotlib, Seaborn")
+    if file:
+        df = cargar_datos(file)
 
-# -------------------------------
-# MÓDULO 2: CARGA DE DATOS
-# -------------------------------
-elif opcion == "Carga de datos":
+        st.success("Archivo cargado")
 
-    st.title("📂 Carga del Dataset")
+        st.write(df.head())
 
-    archivo = st.file_uploader("Sube tu archivo CSV", type=["csv"])
+        st.write(f"Filas: {df.shape[0]} | Columnas: {df.shape[1]}")
 
-    if archivo is not None:
-        df = pd.read_csv(archivo)
+# -------------------------
+# EDA
+# -------------------------
+elif menu == "EDA":
+    st.title("📊 EDA - Análisis Exploratorio")
 
-        st.success("Archivo cargado correctamente ✅")
+    file = st.file_uploader("Sube el CSV", type=["csv"])
 
-        st.subheader("Vista previa")
-        st.dataframe(df.head())
+    if file:
+        df = cargar_datos(file)
 
-        st.subheader("Dimensiones")
-        st.write(f"Filas: {df.shape[0]}, Columnas: {df.shape[1]}")
+        # 🔥 REDUCIR TAMAÑO (CLAVE)
+        if len(df) > 5000:
+            df = df.sample(5000, random_state=1)
 
-    else:
-        st.warning("Por favor, carga un archivo")
+        analizador = Analizador(df)
 
-# -------------------------------
-# MÓDULO 3: EDA
-# -------------------------------
-elif opcion == "EDA":
+        tabs = st.tabs([
+            "1. Info",
+            "2. Variables",
+            "3. Estadísticas",
+            "4. Nulos",
+            "5. Numéricas",
+            "6. Categóricas",
+            "7. Num vs Cat",
+            "8. Cat vs Cat",
+            "9. Dinámico",
+            "10. Hallazgos"
+        ])
 
-    st.title("📊 Análisis Exploratorio")
-
-    archivo = st.file_uploader("Sube el CSV para analizar", type=["csv"])
-
-    if archivo is not None:
-        df = pd.read_csv(archivo)
-        analyzer = DataAnalyzer(df)
-
-        tab1, tab2, tab3, tab4 = st.tabs(
-            ["General", "Numéricas", "Categóricas", "Avanzado"]
-        )
-
-        # -----------------------
-        # TAB 1
-        # -----------------------
-        with tab1:
+        # -------------------------
+        # 1. INFO
+        # -------------------------
+        with tabs[0]:
             st.subheader("Información general")
 
-            st.write("Tipos de datos")
             st.write(df.dtypes)
+            st.write("Filas y columnas:", df.shape)
 
-            st.write("Valores nulos")
-            st.write(analyzer.valores_nulos())
+        # -------------------------
+        # 2. VARIABLES
+        # -------------------------
+        with tabs[1]:
+            num = analizador.numericas()
+            cat = analizador.categoricas()
 
-            st.write("Estadísticas")
-            st.write(analyzer.resumen())
+            st.write("Numéricas:", list(num))
+            st.write("Categóricas:", list(cat))
 
-        # -----------------------
-        # TAB 2
-        # -----------------------
-        with tab2:
-            st.subheader("Variables numéricas")
+        # -------------------------
+        # 3. ESTADÍSTICAS
+        # -------------------------
+        with tabs[2]:
+            st.write(df.describe())
 
-            num_cols, _ = analyzer.tipos_variables()
+        # -------------------------
+        # 4. NULOS
+        # -------------------------
+        with tabs[3]:
+            nulos = analizador.nulos()
+            st.write(nulos[nulos > 0])
 
-            if len(num_cols) > 0:
-                col = st.selectbox("Selecciona variable", list(num_cols))
-            
-                if col in df.columns:
-                    fig, ax = plt.subplots()
-                    sns.histplot(df[col], kde=True, ax=ax)
-                    st.pyplot(fig)
-                else:
-                    st.error("La columna seleccionada no existe en el dataset")
-            else:
-                st.warning("No hay variables numéricas disponibles")
+        # -------------------------
+        # 5. NUMÉRICAS
+        # -------------------------
+        with tabs[4]:
+            num = list(analizador.numericas())
 
-        # -----------------------
-        # TAB 3
-        # -----------------------
-        with tab3:
-            st.subheader("Variables categóricas")
+            if num:
+                col = st.selectbox("Selecciona variable", num)
 
-            _, cat_cols = analyzer.tipos_variables()
+                fig, ax = plt.subplots()
+                ax.hist(df[col], bins=30)
+                st.pyplot(fig)
 
-            if len(cat_cols) > 0:
-                col = st.selectbox("Selecciona variable categórica", list(cat_cols))
-            
-                if col in df.columns:
-                    conteo = df[col].value_counts()
-            
-                    st.write(conteo)
-            
-                    fig, ax = plt.subplots()
-                    conteo.plot(kind='bar', ax=ax)
-                    st.pyplot(fig)
-                else:
-                    st.error("Columna inválida")
-            else:
-                st.warning("No hay variables categóricas")
-    
-        # -----------------------
-        # TAB 4
-        # -----------------------
-        with tab4:
-            st.subheader("Análisis bivariado")
+        # -------------------------
+        # 6. CATEGÓRICAS
+        # -------------------------
+        with tabs[5]:
+            cat = list(analizador.categoricas())
 
-            num_cols, cat_cols = analyzer.tipos_variables()
+            if cat:
+                col = st.selectbox("Variable categórica", cat)
 
-            if len(num_cols) > 0 and len(cat_cols) > 0:
-            
-                col_num = st.selectbox("Variable numérica", list(num_cols))
-                col_cat = st.selectbox("Variable categórica", list(cat_cols))
-            
-                if col_num in df.columns and col_cat in df.columns:
-                    fig, ax = plt.subplots()
-                    sns.boxplot(x=df[col_cat], y=df[col_num], ax=ax)
-                    st.pyplot(fig)
-                else:
-                    st.error("Columnas inválidas")
-            else:
-                st.warning("Faltan variables para análisis bivariado")
+                conteo = df[col].value_counts().head(10)
 
-            # Hallazgos simples
-            st.subheader("Hallazgos")
+                fig, ax = plt.subplots()
+                conteo.plot(kind="bar", ax=ax)
+                st.pyplot(fig)
+
+        # -------------------------
+        # 7. NUM vs CAT
+        # -------------------------
+        with tabs[6]:
+            num = list(analizador.numericas())
+            cat = list(analizador.categoricas())
+
+            if num and cat:
+                col_num = st.selectbox("Numérica", num)
+                col_cat = st.selectbox("Categórica", cat)
+
+                df.groupby(col_cat)[col_num].mean().head(10).plot(kind="bar")
+                st.pyplot(plt)
+
+        # -------------------------
+        # 8. CAT vs CAT
+        # -------------------------
+        with tabs[7]:
+            cat = list(analizador.categoricas())
+
+            if len(cat) >= 2:
+                col1 = st.selectbox("Variable 1", cat)
+                col2 = st.selectbox("Variable 2", cat)
+
+                tabla = pd.crosstab(df[col1], df[col2])
+                st.write(tabla)
+
+        # -------------------------
+        # 9. DINÁMICO
+        # -------------------------
+        with tabs[8]:
+            columnas = st.multiselect("Selecciona columnas", df.columns)
+
+            if columnas:
+                st.write(df[columnas].head())
+
+        # -------------------------
+        # 10. HALLAZGOS
+        # -------------------------
+        with tabs[9]:
             st.write("""
-            - Clientes con mayor duración de llamada tienden a aceptar más.
-            - Algunas categorías muestran mayor conversión.
-            """)
+            🔎 Hallazgos principales:
 
+            1. Mayor duración de llamada → mayor probabilidad de éxito.
+            2. Algunas ocupaciones responden mejor a campañas.
+            3. Variables económicas influyen en la decisión.
+            4. Contactos repetidos pueden mejorar conversión.
+            5. El canal de contacto impacta resultados.
+            """)
     else:
-        st.warning("Primero carga el dataset")
+        st.warning("Carga el dataset primero")
