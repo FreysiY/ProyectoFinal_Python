@@ -206,14 +206,24 @@ elif menu == "EDA":
         # 5. NUMÉRICAS
         # -------------------------
         with tabs[4]:
+            st.subheader("Distribución de variables numéricas")
+        
             num = list(analizador.numericas())
-
-            if num:
-                col = st.selectbox("Selecciona variable", num)
-
-                fig, ax = plt.subplots()
-                ax.hist(df[col], bins=30)
-                st.pyplot(fig)
+        
+            if len(num) > 0:
+                col = st.selectbox("Selecciona una variable numérica", num, key="num5")
+        
+                if col:
+                    st.write(f"Histograma de: {col}")
+        
+                    fig, ax = plt.subplots()
+                    ax.hist(df[col].dropna(), bins=30)
+        
+                    st.pyplot(fig)
+                else:
+                    st.info("Selecciona una variable para visualizar")
+            else:
+                st.warning("No hay variables numéricas en el dataset")
 
         # -------------------------
         # 6. CATEGÓRICAS
@@ -234,28 +244,53 @@ elif menu == "EDA":
         # 7. NUM vs CAT
         # -------------------------
         with tabs[6]:
+            st.subheader("Relación: Variable numérica vs categórica")
+        
             num = list(analizador.numericas())
             cat = list(analizador.categoricas())
-
-            if num and cat:
-                col_num = st.selectbox("Numérica", num)
-                col_cat = st.selectbox("Categórica", cat)
-
-                df.groupby(col_cat)[col_num].mean().head(10).plot(kind="bar")
-                st.pyplot(plt)
+        
+            if len(num) > 0 and len(cat) > 0:
+        
+                col_num = st.selectbox("Variable numérica", num, key="num7")
+                col_cat = st.selectbox("Variable categórica", cat, key="cat7")
+        
+                if col_num and col_cat:
+                    st.write(f"Promedio de {col_num} por {col_cat}")
+        
+                    data = df.groupby(col_cat)[col_num].mean().sort_values(ascending=False).head(10)
+        
+                    fig, ax = plt.subplots()
+                    data.plot(kind="bar", ax=ax)
+        
+                    st.pyplot(fig)
+                else:
+                    st.info("Selecciona ambas variables")
+            else:
+                st.warning("No hay suficientes variables para este análisis")
 
         # -------------------------
         # 8. CAT vs CAT
         # -------------------------
         with tabs[7]:
+            st.subheader("Relación entre variables categóricas")
+        
             cat = list(analizador.categoricas())
-
+        
             if len(cat) >= 2:
-                col1 = st.selectbox("Variable 1", cat)
-                col2 = st.selectbox("Variable 2", cat)
-
-                tabla = pd.crosstab(df[col1], df[col2])
-                st.write(tabla)
+        
+                col1 = st.selectbox("Variable 1", cat, key="cat1_8")
+                col2 = st.selectbox("Variable 2", cat, key="cat2_8")
+        
+                if col1 and col2:
+                    tabla = pd.crosstab(df[col1], df[col2])
+        
+                    st.write("Tabla de contingencia:")
+                    st.dataframe(tabla)
+        
+                else:
+                    st.info("Selecciona ambas variables")
+            else:
+                st.warning("Se necesitan al menos 2 variables categóricas")
 
         # -------------------------
         # 9. DINÁMICO
