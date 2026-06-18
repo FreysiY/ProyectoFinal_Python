@@ -2,23 +2,16 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 
-# -------------------------
-# CONFIG
-# -------------------------
 st.set_page_config(page_title="Bank Marketing", layout="wide")
 
-# -------------------------
-# CACHE (CLAVE PARA MEMORIA)
-# -------------------------
 @st.cache_data
 def cargar_datos(file):
     df = pd.read_csv(file)
     df.columns = df.columns.str.strip()
     return df
 
-# -------------------------
 # CLASE (POO SIMPLE)
-# -------------------------
+
 class Analizador:
     def __init__(self, df):
         self.df = df
@@ -32,33 +25,29 @@ class Analizador:
     def nulos(self):
         return self.df.isnull().sum()
 
-# -------------------------
 # SIDEBAR
-# -------------------------
+
 st.sidebar.title("Menú")
 menu = st.sidebar.selectbox("Ir a:", ["Home", "Carga", "EDA"])
 
-# -------------------------
 # HOME
-# -------------------------
+
 if menu == "Home":
-    st.title("📊 Proyecto: Análisis de Campañas de Marketing Bancario")
+    st.title("Proyecto: Análisis de Campañas de Marketing Bancario")
 
     st.markdown("---")
 
-    # -------------------------
     # DESCRIPCIÓN DEL PROYECTO
-    # -------------------------
-    st.subheader("🎯 Objetivo del Proyecto")
+    
+    st.subheader("Objetivo del Proyecto")
 
     st.write("""
     El objetivo de esta aplicación es realizar un Análisis Exploratorio de Datos (EDA) sobre un dataset de marketing bancario, con el fin de identificar patrones, comportamientos y factores que influyen en la aceptación de campañas.
     """)
 
-    # -------------------------
     # DATOS DEL AUTOR
-    # -------------------------
-    st.subheader("👩‍💻 Datos del Autor")
+   
+    st.subheader("Datos del Autor")
 
     col1, col2 = st.columns(2)
 
@@ -70,10 +59,9 @@ if menu == "Home":
         st.write("**Año:** 2026")
         st.write("**Proyecto:** Caso de Estudio N°1")
 
-    # -------------------------
     # EXPLICACIÓN DEL DATASET
-    # -------------------------
-    st.subheader("📁 Descripción del Dataset")
+ 
+    st.subheader("Descripción del Dataset")
 
     st.write("""
     El dataset BankMarketing contiene información de campañas realizadas por una institución financiera, donde se busca analizar qué factores influyen en que un cliente acepte o no una oferta.
@@ -87,9 +75,8 @@ if menu == "Home":
     - Resultado de la campaña (variable objetivo: **y**)
     """)
 
-    # -------------------------
     # CONTEXTO DEL PROBLEMA
-    # -------------------------
+
     st.subheader("📉 Contexto del Negocio")
 
     st.write("""
@@ -97,37 +84,34 @@ if menu == "Home":
     para optimizar las estrategias de contacto con los clientes.
     """)
 
-    # -------------------------
     # TECNOLOGÍAS
-    # -------------------------
-    st.subheader("🛠 Tecnologías Utilizadas")
+
+    st.subheader("Tecnologías Utilizadas")
 
     col1, col2, col3 = st.columns(3)
 
     with col1:
-        st.write("🐍 Python")
-        st.write("📊 Pandas")
+        st.write("Python")
+        st.write("Pandas")
 
     with col2:
-        st.write("📈 Matplotlib")
-        st.write("🌐 Streamlit")
+        st.write("Matplotlib")
+        st.write("Streamlit")
 
     with col3:
-        st.write("📉 Análisis estadístico")
-        st.write("🧠 EDA")
+        st.write("Análisis estadístico")
+        st.write("EDA")
 
     st.markdown("---")
 
-    # -------------------------
     # NOTA FINAL
-    # -------------------------
     st.info("Aplicación desarrollada como proyecto académico orientado a análisis de datos.")
 
-# -------------------------
+
 # CARGA
-# -------------------------
+
 elif menu == "Carga":
-    st.title("📂 Carga de datos")
+    st.title("Carga de datos")
 
     file = st.file_uploader("Sube el CSV", type=["csv"])
 
@@ -140,18 +124,17 @@ elif menu == "Carga":
 
         st.write(f"Filas: {df.shape[0]} | Columnas: {df.shape[1]}")
 
-# -------------------------
 # EDA
-# -------------------------
+
 elif menu == "EDA":
-    st.title("📊 EDA - Análisis Exploratorio")
+    st.title("EDA - Análisis Exploratorio")
 
     file = st.file_uploader("Sube el CSV", type=["csv"])
 
     if file:
         df = cargar_datos(file)
 
-        # 🔥 REDUCIR TAMAÑO (CLAVE)
+        # REDUCIR TAMAÑO (CLAVE)
         if len(df) > 5000:
             df = df.sample(5000, random_state=1)
 
@@ -170,18 +153,16 @@ elif menu == "EDA":
             "10. Hallazgos"
         ])
 
-        # -------------------------
         # 1. INFO
-        # -------------------------
+
         with tabs[0]:
             st.subheader("Información general")
 
             st.write(df.dtypes)
             st.write("Filas y columnas:", df.shape)
 
-        # -------------------------
         # 2. VARIABLES
-        # -------------------------
+
         with tabs[1]:
             num = analizador.numericas()
             cat = analizador.categoricas()
@@ -189,22 +170,19 @@ elif menu == "EDA":
             st.write("Numéricas:", list(num))
             st.write("Categóricas:", list(cat))
 
-        # -------------------------
         # 3. ESTADÍSTICAS
-        # -------------------------
+
         with tabs[2]:
             st.write(df.describe())
 
-        # -------------------------
         # 4. NULOS
-        # -------------------------
+
         with tabs[3]:
             nulos = analizador.nulos()
             st.write(nulos[nulos > 0])
 
-        # -------------------------
         # 5. NUMÉRICAS
-        # -------------------------
+
         with tabs[4]:
             st.subheader("Distribución de variables numéricas")
         
@@ -225,9 +203,8 @@ elif menu == "EDA":
             else:
                 st.warning("No hay variables numéricas en el dataset")
 
-        # -------------------------
         # 6. CATEGÓRICAS
-        # -------------------------
+
         with tabs[5]:
             cat = list(analizador.categoricas())
 
@@ -240,9 +217,8 @@ elif menu == "EDA":
                 conteo.plot(kind="bar", ax=ax)
                 st.pyplot(fig)
 
-        # -------------------------
         # 7. NUM vs CAT
-        # -------------------------
+
         with tabs[6]:
             st.subheader("Relación: Variable numérica vs categórica")
         
@@ -268,9 +244,8 @@ elif menu == "EDA":
             else:
                 st.warning("No hay suficientes variables para este análisis")
 
-        # -------------------------
         # 8. CAT vs CAT
-        # -------------------------
+
         with tabs[7]:
             st.subheader("Relación entre variables categóricas")
         
@@ -292,21 +267,19 @@ elif menu == "EDA":
             else:
                 st.warning("Se necesitan al menos 2 variables categóricas")
 
-        # -------------------------
         # 9. DINÁMICO
-        # -------------------------
+
         with tabs[8]:
             columnas = st.multiselect("Selecciona columnas", df.columns)
 
             if columnas:
                 st.write(df[columnas].head())
 
-        # -------------------------
         # 10. HALLAZGOS
-        # -------------------------
+
         with tabs[9]:
             st.write("""
-            🔎 Hallazgos principales:
+             Hallazgos principales:
 
             1. Mayor duración de llamada → mayor probabilidad de éxito.
             2. Algunas ocupaciones responden mejor a campañas.
