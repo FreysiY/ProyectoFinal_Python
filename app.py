@@ -77,7 +77,7 @@ if menu == "Home":
 
     # CONTEXTO DEL PROBLEMA
 
-    st.subheader("📉 Contexto del Negocio")
+    st.subheader("Contexto del Negocio")
 
     st.write("""
     La efectividad de las campañas de marketing ha disminuido en los últimos meses, pasando de un 12% a un 8%, lo cual afecta directamente los resultados comerciales. A través de este análisis se busca identificar oportunidades de mejora
