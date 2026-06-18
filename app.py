@@ -281,11 +281,12 @@ elif menu == "EDA":
             st.write("""
              Hallazgos principales:
 
-            1. Mayor duración de llamada → mayor probabilidad de éxito.
-            2. Algunas ocupaciones responden mejor a campañas.
-            3. Variables económicas influyen en la decisión.
-            4. Contactos repetidos pueden mejorar conversión.
-            5. El canal de contacto impacta resultados.
+            1.	La duración de la interacción con el cliente es el factor más influyente en la aceptación de la campaña.
+            2.	Existen segmentos de clientes más propensos a aceptar ofertas, especialmente según su ocupación y nivel educativo.
+            3.	El canal de comunicación utilizado impacta significativamente en los resultados.
+            4.	Las condiciones económicas influyen en la decisión del cliente, por lo que deben considerarse en las estrategias.
+            5.	Un mayor número de contactos puede incrementar la probabilidad de éxito si se realiza de forma adecuada.
+
             """)
     else:
         st.warning("Carga el dataset primero")
